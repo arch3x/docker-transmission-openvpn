@@ -14,19 +14,31 @@ services:
     - 8.8.4.4
   volumes:
     - /etc/localtime:/etc/localtime:ro
-    - /your/storage/path/:/data
+    - nfs:/data
   environment:
-    - OPENVPN_PROVIDER=PIA
-    - OPENVPN_USERNAME=username
-    - OPENVPN_PASSWORD=password
+    - OPENVPN_PROVIDER=NORDVPN
+    - OPENVPN_USERNAME=<username>
+    - OPENVPN_PASSWORD=<password>
     - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
-    - LOCAL_NETWORK=192.168.0.0/24
+    - LOCAL_NETWORK=172.17.13.0/24
+    - TRANSMISSION_SPEED_LIMIT_UP=0
+    - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
+    - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
+    - TRANSMISSION_DOWNLOAD_DIR=/data/complete
 
- proxy:
-  image: haugene/transmission-openvpn-proxy
-  links:
-    - transmission
-  ports:
-    - 8080:8080
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
+# proxy:
+#  image: haugene/transmission-openvpn-proxy
+#  links:
+#    - transmission
+#  ports:
+#    - 8080:8080
+#  volumes:
+#    - /etc/localtime:/etc/localtime:ro
+
+volumes:
+   nfs:
+     driver: local
+     driver_opts:
+       type: nfs
+       o: addr=172.17.13.10,rw
+       device: ":/volume2/downloads"
